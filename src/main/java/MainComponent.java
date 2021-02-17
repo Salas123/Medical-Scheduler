@@ -78,7 +78,7 @@ public class MainComponent
         System.out.println("[CONNECTION to DB]: Connecting to DB....");
         try{
             ConnectionString connectionString = new ConnectionString(
-                    "mongodb+srv://scheduler_user_001:2VTJ8dAIwG6Bg4rJ@schedulecluster.3vcnp.mongodb.net/SchedulerDB?retryWrites=true&w=majority"
+                    //ENTER URI HERE
             );
 
             MongoClientSettings settings = MongoClientSettings.builder()
