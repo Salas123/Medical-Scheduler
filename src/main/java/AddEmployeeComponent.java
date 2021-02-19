@@ -7,6 +7,12 @@ import org.bson.types.ObjectId;
 import javax.swing.*;
 import java.awt.*;
 
+/*
+*  TODO:
+*   - Add Employee ID for easier indexing instead of relying on ObjectId()
+*
+* */
+
 
 public class AddEmployeeComponent
 {

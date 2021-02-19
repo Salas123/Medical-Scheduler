@@ -14,11 +14,11 @@ import org.bson.Document;
 
 public class MainComponent
 {
+
     static JFrame mainFrame;
     static JLabel calendarMonthYearLabel;
     static JPanel optionsPanel, calendarComponent, calenderPanel;
-    static JTextField calendarText;
-    static JButton addEmployeeButton, createScheduleButton, createExcelSheetButton;
+    static JButton addEmployeeButton, editAnExistingEmployeeButton, editAnExistingScheduleButton, createScheduleButton, exportCalendarButton;
     static AddEmployeeComponent employeeComponent;
     static CreateScheduleComponent createScheduleComponent;
     static Calendar date;
@@ -32,10 +32,11 @@ public class MainComponent
         date = Calendar.getInstance();
 
         // main component
-        mainFrame = new JFrame("Scheduler Application");
-        mainFrame.setSize(900, 600);
+        mainFrame = new JFrame("Salas Scheduler");
+        mainFrame.setSize(950, 650);
         mainFrame.setResizable(false);
         mainFrame.setLayout(new BorderLayout());
+
 
         // sub components
         optionsPanel = new JPanel();
@@ -45,27 +46,52 @@ public class MainComponent
         // Buttons for main component
         addEmployeeButton = new JButton("Add Employee");
         createScheduleButton = new JButton("Create Schedule");
-        createExcelSheetButton = new JButton("Create Excel Sheet");
+        exportCalendarButton = new JButton("Export Calendar...");
+        editAnExistingEmployeeButton = new JButton("Edit An Existing Employee");
+        editAnExistingScheduleButton = new JButton("Edit An Existing Calendar");
 
+        //Panels for main component: optionsPanel for buttons and calendarComponent for the day panels
         optionsPanel.setPreferredSize(new Dimension(220, 500));
-        calenderPanel.setPreferredSize(new Dimension(650, 400));
+        calenderPanel.setPreferredSize(new Dimension(650, 350));
         optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.Y_AXIS));
-        calenderPanel.setLayout(new GridLayout());
+        calenderPanel.setLayout(new GridLayout(5,7));
         calendarComponent.setLayout(new BoxLayout(calendarComponent, BoxLayout.Y_AXIS));
 
         String calendarStr = MONTHS[date.get(Calendar.MONTH)] + " " + Integer.toString(date.get(Calendar.YEAR));
         calendarMonthYearLabel = new JLabel(calendarStr);
 
-        calendarText = new JTextField("Here is where the calendar will go");
-        calendarText.setEditable(false);
 
         optionsPanel.add(addEmployeeButton);
         optionsPanel.add(createScheduleButton);
-        optionsPanel.add(createExcelSheetButton);
+        optionsPanel.add(Box.createRigidArea(new Dimension(20,30)));
+        optionsPanel.add(editAnExistingEmployeeButton);
+        optionsPanel.add(editAnExistingScheduleButton);
+        optionsPanel.add(Box.createRigidArea(new Dimension(20,30)));
+        optionsPanel.add(exportCalendarButton);
+
 
         calendarComponent.add(calendarMonthYearLabel);
-        calenderPanel.add(calendarText);
+
+
+        for (int i = 1; i <= 31; i++) {
+            /*
+             * TODO:
+             *  This is where all the days will be made from the day factory, this needs to pull from the DB
+             *
+             * */
+
+
+            DayFactory day = new DayFactory(i);
+
+            if(i == date.get(Calendar.DAY_OF_MONTH))
+                day.setPanelColor(Color.DARK_GRAY);
+
+            calenderPanel.add(day.getMainPanel());
+        }
+
         calendarComponent.add(calenderPanel);
+
+        System.out.println("Calendar bounds: " + calenderPanel.getHeight());
 
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mainFrame.add(BorderLayout.WEST, optionsPanel);
@@ -78,7 +104,7 @@ public class MainComponent
         System.out.println("[CONNECTION to DB]: Connecting to DB....");
         try{
             ConnectionString connectionString = new ConnectionString(
-                    //ENTER URI HERE
+                    //DB URI GOES HERE
             );
 
             MongoClientSettings settings = MongoClientSettings.builder()
@@ -97,6 +123,7 @@ public class MainComponent
         {
             System.out.println("[ERROR connection to DB]: \n" + e);
         }
+
 
         // Adding employee action listener button... this opens up the addEmployee window
         addEmployeeButton.addActionListener(e ->
