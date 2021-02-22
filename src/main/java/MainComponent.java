@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClients;
@@ -60,7 +62,7 @@ public class MainComponent
         String calendarStr = MONTHS[date.get(Calendar.MONTH)] + " " + Integer.toString(date.get(Calendar.YEAR));
         calendarMonthYearLabel = new JLabel(calendarStr);
 
-
+        optionsPanel.add(Box.createRigidArea(new Dimension(20, 400)));
         optionsPanel.add(addEmployeeButton);
         optionsPanel.add(createScheduleButton);
         optionsPanel.add(Box.createRigidArea(new Dimension(20,30)));
@@ -68,12 +70,12 @@ public class MainComponent
         optionsPanel.add(editAnExistingScheduleButton);
         optionsPanel.add(Box.createRigidArea(new Dimension(20,30)));
         optionsPanel.add(exportCalendarButton);
-
+        optionsPanel.setBackground(Color.DARK_GRAY);
 
         calendarComponent.add(calendarMonthYearLabel);
 
 
-        for (int i = 1; i <= 31; i++) {
+        for (int i = 1; i <= 28; i++) {
             /*
              * TODO:
              *  This is where all the days will be made from the day factory, this needs to pull from the DB
@@ -105,6 +107,7 @@ public class MainComponent
         try{
             ConnectionString connectionString = new ConnectionString(
                     //DB URI GOES HERE
+
             );
 
             MongoClientSettings settings = MongoClientSettings.builder()
@@ -134,7 +137,7 @@ public class MainComponent
 
 
         createScheduleButton.addActionListener(e -> {
-            createScheduleComponent = new CreateScheduleComponent();
+            createScheduleComponent = new CreateScheduleComponent(employeesCollections);
         });
 
 

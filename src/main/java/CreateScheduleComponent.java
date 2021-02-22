@@ -1,5 +1,12 @@
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class CreateScheduleComponent
 {
@@ -8,16 +15,17 @@ public class CreateScheduleComponent
     static JLabel monthsDescriptorLabel;
     static JButton optimizeButton, previewButton, cancelButton;
     static String[] MONTHS = {"JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"};
+    static int[] DAYS_IN_MONTHS = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     static JComboBox monthsComboBox;
+    static HashMap<String, Employee> employeeDB_HashMap;
 
     /*
     * TODO:
-    *  - Need to add drop down menu for indexing which month the user would like to create schedule for
     *  - Add basic logic for adding 1st year employees into a schedule
     *
     * */
 
-    public CreateScheduleComponent()
+    public CreateScheduleComponent(MongoCollection<Document> employeeDB)
     {
         //Create schedule component
         createScheduleFrame = new JFrame("Create Schedule");
@@ -70,6 +78,19 @@ public class CreateScheduleComponent
         createScheduleFrame.setVisible(true);
 
 
+        //Hashmap of all employees from the DB
+        employeeDB_HashMap = new HashMap<>();
+        for (Document employeeFromDB: employeeDB.find())
+        {
+            Employee employee = new Employee((String)employeeFromDB.get("First_Name"), (String)employeeFromDB.get("Last_Name"),
+                    (String)employeeFromDB.get("Standing"), (String)employeeFromDB.get("Concentration"), (String)employeeFromDB.get("Rank"), (String)employeeFromDB.get("Employee_ID"));
+
+
+            employeeDB_HashMap.put(employee.getEmployee_id(), employee);
+        }
+
+
+
         optimizeButton.addActionListener(e -> {
             previewButton.setVisible(true);
             /*
@@ -93,4 +114,9 @@ public class CreateScheduleComponent
         createScheduleFrame.dispose();
     });
     }
+
+
+    /*
+    *  TODO: Create basic functionality for: employees -> department, department -> day, day -> month
+    * */
 }

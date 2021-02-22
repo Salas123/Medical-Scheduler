@@ -28,17 +28,18 @@ public class Day {
         return numEmployeesInBrown;
     }
 
-    public int getNumEmployeesInGreen() {
-        return numEmployeesInGreen;
-    }
+    public int getNumEmployeesInGreen() { return numEmployeesInGreen;}
 
     public int getNumEmployeesInOrange() {
         return numEmployeesInOrange;
     }
 
+    public int getDayNum(){return dayNum;}
+
     public void setDepartment(String key, Departments departments){
         this.departments.put(key, departments);
     }
+
 
     public Departments getDepartment(String key)
     {

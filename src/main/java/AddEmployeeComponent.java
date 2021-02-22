@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Random;
 
 /*
 *  TODO:
@@ -25,9 +26,8 @@ public class AddEmployeeComponent
     static JComboBox concentrationComboBox, standingComboBox, rankingComboBox;
     static String[] concentrationStrings = new String[]{"--Choose Concentration--", "Internal Medicine", "Emergency Medicine"};
     static String[] standingStrings = new String[]{"--Attending or Resident--","Attending", "Resident"};
-    static String[] rankingStrings = new String[]{"--Choose Ranking--","Rank 1", "Rank 2", "Rank 3", "Rank 4", "Chief", "PA"};
+    static String[] rankingStrings = new String[]{"--Choose Ranking--","Rank 1", "Rank 2", "Rank 3", "Rank 4", "Chief", "PA","N/A"};
     static String standing, concentration, ranking;
-    static Employee employee;
     static MongoCollection<org.bson.Document> employeeDB;
 
     public AddEmployeeComponent(MongoCollection<org.bson.Document> employeeDB)
@@ -121,6 +121,8 @@ public class AddEmployeeComponent
         cancelButton.addActionListener(e -> {
             addEmployeeFrame.dispose();
         });
+
+        // Adding employee to DB
         addButton.addActionListener(e -> {
             if(standingComboBox.getSelectedIndex() == 0 || concentrationComboBox.getSelectedIndex() == 0 || rankingComboBox.getSelectedIndex() == 0)
                 JOptionPane.showMessageDialog(addEmployeeFrame, "One or more of the following selections was not chosen...", "ERROR", JOptionPane.ERROR_MESSAGE);
@@ -130,7 +132,7 @@ public class AddEmployeeComponent
                 concentration = concentrationStrings[concentrationComboBox.getSelectedIndex()];
                 ranking = rankingStrings[rankingComboBox.getSelectedIndex()];
 
-                if(inputValidation( concentration, ranking))
+                if(inputValidation(standing, concentration, ranking))
                 {
                     String strToShow = "Does this look correct?\nFirst Name: " + firstNameInput.getText() + "\nLast Name: " + lastNameInput.getText()
                             + "\nClass Level: " + standing + "\nConcentration: " + concentration + "\nRank: " + ranking;
@@ -140,25 +142,33 @@ public class AddEmployeeComponent
                     if(option == JOptionPane.YES_OPTION)
                     {
 
-                         this.employee = new Employee(firstNameInput.getText(), lastNameInput.getText(), standing, concentration, ranking);
                          JOptionPane.showMessageDialog(addEmployeeFrame, "Adding " + firstNameInput.getText()
                          + " " + lastNameInput.getText() + " to database!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
+                         /*
+                         * Creating a document with the following info of the employee... number of shifts gets assigned once the
+                         * employee is pulled from the DB to make an optimized schedule
+                         * */
+
+                        String employeeId = createRandomizedHash();
 
                         Document employeeDocument = new Document("_id", new ObjectId());
-                        employeeDocument.append("First_Name", employee.getFirstName())
-                                .append("Last_Name", employee.getLastName())
-                                .append("Standing", employee.getStanding())
-                                .append("Concentration", employee.getConcentration())
-                                .append("Rank", employee.getRank());
+                        employeeDocument.append("First_Name", firstNameInput.getText())
+                                .append("Last_Name", lastNameInput.getText())
+                                .append("Standing", standing)
+                                .append("Concentration", concentration)
+                                .append("Rank", ranking)
+                                .append("Employee_ID", employeeId);
+
 
                         employeeDB.insertOne(employeeDocument);
 
+                        // close window once the employee is added to the DB
                         addEmployeeFrame.dispose();
                     }
                 }
                 else
-                    JOptionPane.showMessageDialog(addEmployeeFrame, "Employee fields did not match with their respective concentrations!", "ERROR",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(addEmployeeFrame, "Employee fields do not match with their respective concentrations and/or standing!", "ERROR",JOptionPane.ERROR_MESSAGE);
             }
 
         });
@@ -167,17 +177,32 @@ public class AddEmployeeComponent
 
     }
 
-
-    public Employee getEmployee() { return employee;}
-
-    static boolean inputValidation(String concentration_param, String ranking_param)
+    static boolean inputValidation(String standing_param, String concentration_param, String ranking_param)
     {
             if(concentration_param.equals("Emergency Medicine") && ranking_param.equals("PA"))
                 return false;
             if(concentration_param.equals("Internal Medicine") && (ranking_param.equals("Chief") || ranking_param.equals("Rank 4")))
                 return false;
-
+            if(standing_param.equals("Attending") && !ranking_param.equals("N/A"))
+                return false;
 
             return true;
+    }
+
+
+    static String createRandomizedHash()
+    {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+       return generatedString;
     }
 }
