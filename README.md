@@ -10,5 +10,4 @@
 
 ## Features:
 ### Main screen to hold the current month's optimized schedule
-![Image of main calendar component]
-(https://github.com/Salas123/Medical-Scheduler/blob/master/assests/calendarGUI.png)
+![Image of main calendar component](https://github.com/Salas123/Medical-Scheduler/blob/master/assests/calendarGUI.png)
