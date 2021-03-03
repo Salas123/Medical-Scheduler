@@ -8,12 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
-/*
-*  TODO:
-*   - Add Employee ID for easier indexing instead of relying on ObjectId()
-*
-* */
-
 
 public class AddEmployeeComponent
 {
@@ -26,7 +20,7 @@ public class AddEmployeeComponent
     static JComboBox concentrationComboBox, standingComboBox, rankingComboBox;
     static String[] concentrationStrings = new String[]{"--Choose Concentration--", "Internal Medicine", "Emergency Medicine"};
     static String[] standingStrings = new String[]{"--Attending or Resident--","Attending", "Resident"};
-    static String[] rankingStrings = new String[]{"--Choose Ranking--","Rank 1", "Rank 2", "Rank 3", "Rank 4", "Chief", "PA","N/A"};
+    static String[] rankingStrings = new String[]{"--Choose Ranking--","Rank 1", "Rank 2", "Rank 3", "Rank 4", "Chief", "PA","Regular", "APD", "AF", "Core"};
     static String standing, concentration, ranking;
     static MongoCollection<org.bson.Document> employeeDB;
 
@@ -119,13 +113,21 @@ public class AddEmployeeComponent
 
         //Button action listeners
         cancelButton.addActionListener(e -> {
+            System.out.println("[Add Employee Component]: Closing down add employee component...");
             addEmployeeFrame.dispose();
         });
 
         // Adding employee to DB
         addButton.addActionListener(e -> {
+
+            System.out.println("[Add Employee Component]: Adding employee to DB...");
             if(standingComboBox.getSelectedIndex() == 0 || concentrationComboBox.getSelectedIndex() == 0 || rankingComboBox.getSelectedIndex() == 0)
-                JOptionPane.showMessageDialog(addEmployeeFrame, "One or more of the following selections was not chosen...", "ERROR", JOptionPane.ERROR_MESSAGE);
+            {
+                JOptionPane.showMessageDialog(addEmployeeFrame, "One or more of the following selections was not chosen...",
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+
+                System.out.println("[Adding Employee Component]: No item was selected from the dropdown menus....");
+            }
             else
             {
                 standing = standingStrings[standingComboBox.getSelectedIndex()];
@@ -160,15 +162,20 @@ public class AddEmployeeComponent
                                 .append("Rank", ranking)
                                 .append("Employee_ID", employeeId);
 
-
+                        System.out.println("[Adding Employee Component]: Inserting Employee....");
                         employeeDB.insertOne(employeeDocument);
 
                         // close window once the employee is added to the DB
+                        System.out.println("[Add Employee Component]: Closing down add employee component...");
                         addEmployeeFrame.dispose();
                     }
                 }
                 else
-                    JOptionPane.showMessageDialog(addEmployeeFrame, "Employee fields do not match with their respective concentrations and/or standing!", "ERROR",JOptionPane.ERROR_MESSAGE);
+                {
+                    JOptionPane.showMessageDialog(addEmployeeFrame, "Employee fields do not match with their respective concentrations and/or standing!", "ERROR",
+                        JOptionPane.ERROR_MESSAGE);
+                    System.out.println("[Adding Employee Component]: Input validation found incorrect combination....");
+                }
             }
 
         });
@@ -177,19 +184,22 @@ public class AddEmployeeComponent
 
     }
 
+
+
+    //This function provides validation on whether the correct concentrations are paired with their correct rankings
     static boolean inputValidation(String standing_param, String concentration_param, String ranking_param)
     {
             if(concentration_param.equals("Emergency Medicine") && ranking_param.equals("PA"))
                 return false;
             if(concentration_param.equals("Internal Medicine") && (ranking_param.equals("Chief") || ranking_param.equals("Rank 4")))
                 return false;
-            if(standing_param.equals("Attending") && !ranking_param.equals("N/A"))
+            if(standing_param.equals("Attending") && !(ranking_param.equals("Regular") || ranking_param.equals("APD") || ranking_param.equals("AF") || ranking_param.equals("Core")))
                 return false;
 
             return true;
     }
 
-
+    // This function creates the random employee id for the DB, so it can help with future querying and not relying on objectID() method
     static String createRandomizedHash()
     {
         int leftLimit = 48; // numeral '0'

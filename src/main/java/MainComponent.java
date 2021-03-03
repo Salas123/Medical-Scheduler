@@ -29,6 +29,7 @@ public class MainComponent
     static JButton addEmployeeButton, editAnExistingEmployeeButton, editAnExistingScheduleButton, createScheduleButton, exportCalendarButton;
     static AddEmployeeComponent employeeComponent;
     static CreateScheduleComponent createScheduleComponent;
+    static EditExisitingEmployeeComponent editExisitingEmployeeComponent;
     static Calendar date;
     private String[] MONTHS = {"JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"};
     static int[] DAYS_IN_MONTHS = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -117,11 +118,6 @@ public class MainComponent
         int boxesLeftToAdd = 35 - addEmptyBoxes(getFirstDateOfCurrentMonth(), calenderDaysPanel);
 
         for (int i = 1; i <= DAYS_IN_MONTHS[date.get(Calendar.MONTH)]; i++) {
-            /*
-             * TODO:
-             *  This is where all the days will be made from the day factory, this needs to pull from the DB
-             *
-             * */
 
 
             DayFactory day = new DayFactory(i);
@@ -152,7 +148,7 @@ public class MainComponent
         try{
             ConnectionString connectionString = new ConnectionString(
                     //DB URI GOES HERE
-
+                    "mongodb+srv://scheduler_user_001:2VTJ8dAIwG6Bg4rJ@schedulecluster.3vcnp.mongodb.net/SchedulerDB?retryWrites=true&w=majority"
             );
 
             MongoClientSettings settings = MongoClientSettings.builder()
@@ -181,10 +177,15 @@ public class MainComponent
                 }
         );
 
-
+        // Creating schedule button listner button.. this opens up the creating schedule window
         createScheduleButton.addActionListener(e -> {
             System.out.println("[Create Schedule Component]: Opening up create schedule component...");
             createScheduleComponent = new CreateScheduleComponent(employeesCollections);
+        });
+
+        editAnExistingEmployeeButton.addActionListener(e -> {
+            System.out.println("[Edit Employee Component]: Opening up edit employee component...");
+            editExisitingEmployeeComponent = new EditExisitingEmployeeComponent(employeesCollections);
         });
 
 
