@@ -4,10 +4,17 @@
 ## Technologies Used:
 ### - Java (main language), Java Swing(GUI)
 ### - Maven (project dependencies)
-### - MongoDB (Database)
+### - MongoDB Atlas (Database)
 
 ### - Adobe Illustrator (UML Designs)
 
-## Features:
-### Main screen to hold the current month's optimized schedule
+## Features(Working):
+### Main Component: to hold the current month's optimized schedule and provide other options
 ![Image of main calendar component](https://github.com/Salas123/Medical-Scheduler/blob/master/assests/calendarGUI.png)
+
+### Add Employee Component: adds employee to database(MongoDB Atlas) for future queries, as well provides input verification to address specific employee characteristics
+![Image of add employee component](https://github.com/Salas123/Medical-Scheduler/blob/master/assests/addEmployeeGUI.png)
+
+
+### Edit Employee Component: edits and deletes employees from the database
+![Image of edit employee component](https://github.com/Salas123/Medical-Scheduler/blob/master/assests/editEmployeeGUI.png)
