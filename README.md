@@ -18,3 +18,6 @@
 
 ### Edit Employee Component: edits and deletes employees from the database
 ![Image of edit employee component](https://github.com/Salas123/Medical-Scheduler/blob/master/assests/editEmployeeGUI.png)
+
+### Video Demonstration 
+![Video of Add and Edit Employee Component](https://github.com/Salas123/Medical-Scheduler/blob/master/assests/edit-add-employee.mp4)
